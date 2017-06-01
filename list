@@ -1,0 +1,95 @@
+# 获取用户数据
+GET /api/user/{userName}
+Return example:
+{ "username": "18600028197", "password": "C5B6AB92", "nickname": "xiaoming", "avatar": "img3", "info": "此人没有介绍" };
+
+
+# 向手机发送验证码，并返回是否成功发送
+GET /api/sendcode/{PhoneNumber}
+Return example:     
+  {"error": ""}
+OR  
+  {"error": "请求太多了"}
+  ...
+
+
+# 使用验证码设置用户数据
+PUT /api/user/{userName}?code=452618
+BODY:
+{ "username": "18600028197", "password": "6A7BC9C1E", "nickname": "xiaoming", "avatar": "img2"}
+Return example:     
+  {"error": ""}
+OR
+  {"error": "验证码校验失败"}
+  ...
+
+
+# 登录用户
+GET /api/login/{userName}/{password}
+Return example: 
+  {"error": "", "token": "UKDFJOE382SFHHFV653AJF2319EKFSJKG"}
+OR
+  {"error": "用户名不存在"}
+OR
+  {"error": "用户密码不正确"}
+  ...
+
+
+# 使用token设置用户数据 (不能修改密码，改密码必须用手机验证码)
+PUT /api/user/{userName}?token=UKDFJOE382SFHHFV653AJF2319EKFSJKG
+BODY:
+{ "username": "18600028197", "nickname": "xiaoming", "avatar": "img2", "info": "此人没有介绍"}
+Return example:     
+  {"error": ""}
+OR
+  {"error": "校验失败"}
+  ...
+
+
+
+# 获取所有视频类型
+GET /api/videotypes
+Return example: [{"name": "game", "icon": "http://gvrcraft.com/sai.jpg", "display": "赛事" }, {"name": "knowledge", "icon": "http://gvrcraft.com/knowledge.jpg", "display": "知识"}]
+
+
+# 获取某种类型的轮播列表
+GET /api/barrier/{videotype}
+Return example: [ 
+{"videoId": "video1", "url": "http://gvrcraft.com/a.mp4", "duration": 70,  "description": "这是个好视频", "preview": "http://gvrcraft.com/b.jpg", "like": 3456, "viewSeconds": 829122, "viewpeople": 230, "maxViewPeople": 574
+},
+{"videoId": "video2", "url": "http://gvrcraft.com/a2.mp4", "duration": 80,  "description": "这也是个好视频", "preview": "http://gvrcraft.com/c.jpg", "like": 3476, "viewSeconds": 829133, "viewpeople": 260, "maxViewPeople": 594
+}
+]
+
+# 获取某个用户的收藏视频
+GET /api/user/{userName}/favorite
+Return example: [
+{"videoId": "video1", "url": "http://gvrcraft.com/a.mp4", "duration": 70,  "description": "这是个好视频", "preview": "http://gvrcraft.com/b.jpg", "like": 3456, "viewSeconds": 829122, "viewpeople": 230, "maxViewPeople": 574
+},
+{"videoId": "video2", "url": "http://gvrcraft.com/a2.mp4", "duration": 80,  "description": "这也是个好视频", "preview": "http://gvrcraft.com/c.jpg", "like": 3476, "viewSeconds": 829133, "viewpeople": 260, "maxViewPeople": 594
+}
+]
+
+
+# 获取某种类型的视频列表第N页，如果不加 page 就是第一页。
+GET /api/videos/{videotype}?page=N
+Return example: [ 
+{"videoId": "video1", "url": "http://gvrcraft.com/a.mp4", "duration": 70,  "description": "这是个好视频", "preview": "http://gvrcraft.com/b.jpg", "like": 3456, "viewSeconds": 829122, "viewpeople": 230, "maxViewPeople": 574
+},
+{"videoId": "video2", "url": "http://gvrcraft.com/a2.mp4", "duration": 80,  "description": "这也是个好视频", "preview": "http://gvrcraft.com/c.jpg", "like": 3476, "viewSeconds": 829133, "viewpeople": 260, "maxViewPeople": 594
+}
+]
+
+
+# 获取热词
+GET /api/hotwords
+Return example: ['good', 'cool']
+
+
+# 获取闪屏页面，deviceType 是 iOS, Android 等
+GET /api/splash/{deviceType}
+Return example: { "url": "http://gvrcraft.com/b.jpg", "type": "video", "param": "http://gvrcraft.com/v.mp4", "duration": 3 }
+
+
+
+
