@@ -139,7 +139,8 @@ exports.VisitDetails = mongolass.model('VisitDetails', {
     region: {type: 'string'},
     city: {type: 'string'},
     platform: {type: 'string'},
-    browser: {type: 'string'}
+    browser: {type: 'string'},
+    duration: {type: 'number'}
 });
 exports.VisitDetails.index({ip: 1}).exec();
 exports.VisitDetails.index({date: -1}).exec();
