@@ -21,7 +21,9 @@ process.on('uncaughtException', function (err) {
 
 setInterval(() => {
     const before60s = new Date(new Date() - 60 * 1000);
-    VisitDetails.find({begin: {$lte: before60s}, end: {$gte: before60s}}).exec().then(([{length}])=> {
+    VisitDetails.find({begin: {$lte: before60s}, end: {$gte: before60s}})
+        .exec()
+        .then(({length})=> {
         MaxVisitors.create({count: length, date: new Date()}).exec();
     }, (error) => {
         console.error(error);
