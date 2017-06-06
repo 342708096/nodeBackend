@@ -43,7 +43,10 @@ exports.responseObj = function (res, obj) {
         return exports.sendError(res, 'No exist');
     }
 
-    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.writeHead(200, {'Content-Type': 'application/json',
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods":"PUT,POST,GET,DELETE,OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type,Content-Length, Authorization, Accept,X-Requested-With"});
     res.write(JSON.stringify(obj));
     res.end();
 

@@ -26,8 +26,8 @@ exports.setup = function (server) {
             resp.setEncoding('utf8');
             resp.on('data', function(response){
                 response = JSON.parse(response);
-                const region = response.data.region;
-                const city = response.data.city;
+                const region = response.data.region || 'unknown';
+                const city = response.data.city || 'unknown';
                 Details.create({ip, begin: date, end: new Date(new Date() + 60 * 1000), duration:60 * 1000, type, platform, browser, region, city}).exec().then((response) => {
                     _net.responseObj(res, response.ops[0]._id);
                 }, (error) => {
@@ -101,9 +101,32 @@ exports.setup = function (server) {
                 max: {$max: '$count'}
             }
             }]).exec().then(([group]) => group.max);
-        Promise.all([visitTimePromise,ipCountPromise, totalDurationPromise, averageDurationPromise, maxVisitorsPromise])
-            .then(([visitTimes, ipCount, totalDuration, averageDuration, peakIpCount]) => {
-            _net.responseObj(res, {visitTimes, ipCount, totalDuration, averageDuration, peakIpCount});
+
+        const platformWeightPromise = Details.aggregate([{
+            $group: {
+                _id: '$platform',
+                count: {$sum: 1}
+            }
+        }]).exec();
+
+        const browserWeightPromise = Details.aggregate([{
+            $group: {
+                _id: '$browser',
+                count: {$sum: 1}
+            }
+        }]).exec();
+
+        const AreaWeightPromise = Details.aggregate([{
+            $group: {
+                _id: '$region',
+                count: {$sum: 1}
+            }
+        }]).exec();
+
+
+        Promise.all([visitTimePromise,ipCountPromise, totalDurationPromise, averageDurationPromise, maxVisitorsPromise, platformWeightPromise, browserWeightPromise,AreaWeightPromise])
+            .then(([visitTimes, ipCount, totalDuration, averageDuration, peakIpCount,  platformWeight, browserWeight,areaWeight]) => {
+            _net.responseObj(res, {visitTimes, ipCount, totalDuration, averageDuration, peakIpCount, platformWeight, browserWeight, areaWeight});
         });
 
         // {"visitTimes":1,"ipCount":1000,"peakIpCount":30,"totalDuration":1568,"averageDuration":200}
