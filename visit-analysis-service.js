@@ -73,7 +73,8 @@ exports.setup = function (server) {
             _net.responseObj(res, list);
         },(error) => {
             _net.responseError(error);
-        })
+        });
+        return next();
     });
 
     server.add_get('/api/summary', function (req, res, next) {
