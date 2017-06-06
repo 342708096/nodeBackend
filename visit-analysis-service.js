@@ -28,7 +28,7 @@ exports.setup = function (server) {
                 response = JSON.parse(response);
                 const region = response.data.region;
                 const city = response.data.city;
-                Details.create({ip, begin: date, end: date, duration:0, type, platform, browser, region, city}).exec().then((response) => {
+                Details.create({ip, begin: date, end: new Date(new Date() + 60 * 1000), duration:60 * 1000, type, platform, browser, region, city}).exec().then((response) => {
                     _net.responseObj(res, response.ops[0]._id);
                 }, (error) => {
                     _net.responseObj(res, error);
@@ -68,6 +68,13 @@ exports.setup = function (server) {
         return next();
     });
 
+    server.add_get('/api/online', (req, res, next) => {
+        MaxVisitors.find().sort({date: 1}).exec().then((list) => {
+            _net.responseObj(res, list);
+        },(error) => {
+            _net.responseError(error);
+        })
+    });
 
     server.add_get('/api/summary', function (req, res, next) {
         const visitTimePromise = Details.count().exec();
