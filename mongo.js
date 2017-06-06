@@ -134,7 +134,8 @@ exports.Favorites.index({keyWord: 1, date: -1}).exec();
 //======================页面统计========================
 exports.VisitDetails = mongolass.model('VisitDetails', {
     ip: {type: 'string'},
-    date: {type: 'date'},
+    begin: {type: 'date'},
+    end: {type: 'date'},
     type: {type: 'string'},
     region: {type: 'string'},
     city: {type: 'string'},
@@ -142,5 +143,12 @@ exports.VisitDetails = mongolass.model('VisitDetails', {
     browser: {type: 'string'},
     duration: {type: 'number'}
 });
+
 exports.VisitDetails.index({ip: 1}).exec();
-exports.VisitDetails.index({date: -1}).exec();
+exports.VisitDetails.index({begin: -1}).exec();
+exports.VisitDetails.index({end: -1}).exec();
+
+exports.MaxVisitors = mongolass.model('MaxVisitors', {
+   count: {type: 'number'},
+   date: {type: 'date'}
+});
