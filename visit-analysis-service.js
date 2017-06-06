@@ -3,7 +3,6 @@ const mongo = require('./mongo.js');
 const Details = mongo.VisitDetails;
 const MaxVisitors = mongo.MaxVisitors;
 const _net = require('./utils/net.js');
-const _verify = require('./utils/verify.js');
 const uaParser = require('ua-parser-js');
 const http = require('http');
 
