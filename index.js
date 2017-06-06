@@ -21,16 +21,8 @@ process.on('uncaughtException', function (err) {
 
 setInterval(() => {
     const before60s = new Date(new Date() - 60 * 1000);
-    Promise.all([VisitDetails.find({begin: {$lte: before60s}, end: {$gte: before60s}}).exec(), MaxVisitors.findOne().exec()]).then(([{length}, maxVisitors])=> {
-        if (length){
-            if (!maxVisitors) {
-                MaxVisitors.create({count: length, date: new Date()}).exec();
-                return;
-            }
-            if (length > maxVisitors.count) {
-                MaxVisitors.updateOne({}, {$set: {count: length, date: new Date()}}).exec();
-            }
-        }
+    VisitDetails.find({begin: {$lte: before60s}, end: {$gte: before60s}}).exec().then(([{length}])=> {
+        MaxVisitors.create({count: length, date: new Date()}).exec();
     }, (error) => {
         console.error(error);
     });

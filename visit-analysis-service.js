@@ -59,6 +59,15 @@ exports.setup = function (server) {
         return next()
     });
 
+    server.add_get('/api/enter', (req, res, next) => {
+        Details.find().sort({end: -1}).limit(100).exec().then((list) => {
+            _net.responseObj(res,list)
+        },(error) => {
+            _net.responseError(error)
+        });
+        return next();
+    });
+
 
     server.add_get('/api/summary', function (req, res, next) {
         const visitTimePromise = Details.count().exec();
@@ -78,7 +87,12 @@ exports.setup = function (server) {
             }
         }]).exec().then(([group]) => group.averageDuration);
 
-        const maxVisitorsPromise = MaxVisitors.findOne().exec().then(data => data ? data.count : 0);
+        const maxVisitorsPromise = MaxVisitors.aggregate([{
+            $group: {
+                _id: {},
+                max: {$max: '$count'}
+            }
+            }]).exec().then(([group]) => group.max);
         Promise.all([visitTimePromise,ipCountPromise, totalDurationPromise, averageDurationPromise, maxVisitorsPromise])
             .then(([visitTimes, ipCount, totalDuration, averageDuration, peakIpCount]) => {
             _net.responseObj(res, {visitTimes, ipCount, totalDuration, averageDuration, peakIpCount});
