@@ -48,6 +48,10 @@ exports.setup = function (server) {
     server.add_put('/api/enter/:id', function (req, res, next){
         const _id = req.params.id;
         Details.findOne({_id}).then((data) => {
+            if (!data) {
+                _net.responseError(res, 'not found', 404);
+                return;
+            }
             const end = new Date();
             const duration = end - data.begin;
             Details.updateOne({_id}, {$set:{duration, end}}).exec();
@@ -62,6 +66,15 @@ exports.setup = function (server) {
     server.add_get('/api/enter', (req, res, next) => {
         Details.find().sort({end: -1}).limit(100).exec().then((list) => {
             _net.responseObj(res,list)
+        },(error) => {
+            _net.responseError(error)
+        });
+        return next();
+    });
+
+    server.add_delete('/api/enter', (req, res, next) => {
+        Promise.all([Details.remove().exec(),MaxVisitors.remove().exec()]).then(() => {
+            _net.responseText(res)
         },(error) => {
             _net.responseError(error)
         });
@@ -86,21 +99,21 @@ exports.setup = function (server) {
                 _id: {},
                 totalDuration: {$sum: '$duration'}
             }
-        }]).exec().then(([group]) => group.totalDuration);
+        }]).exec().then(([group]) => group ? group.totalDuration : 0);
 
         const averageDurationPromise = Details.aggregate([{
             $group: {
                 _id:{},
                 averageDuration: {$avg: '$duration'}
             }
-        }]).exec().then(([group]) => group.averageDuration);
+        }]).exec().then(([group]) => group ? group.averageDuration : 0);
 
         const maxVisitorsPromise = MaxVisitors.aggregate([{
             $group: {
                 _id: {},
                 max: {$max: '$count'}
             }
-            }]).exec().then(([group]) => group.max);
+            }]).exec().then(([group]) => group ? group.max : 0);
 
         const platformWeightPromise = Details.aggregate([{
             $group: {
@@ -132,4 +145,5 @@ exports.setup = function (server) {
         // {"visitTimes":1,"ipCount":1000,"peakIpCount":30,"totalDuration":1568,"averageDuration":200}
         return next();
     }, 'Get summary');
+
 };
