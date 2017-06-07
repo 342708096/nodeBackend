@@ -136,10 +136,13 @@ exports.setup = function (server) {
             }
         }]).exec();
 
+        const onlinePromise = MaxVisitors.find().sort({date: 1}).exec();
 
-        Promise.all([visitTimePromise,ipCountPromise, totalDurationPromise, averageDurationPromise, maxVisitorsPromise, platformWeightPromise, browserWeightPromise,AreaWeightPromise])
-            .then(([visitTimes, ipCount, totalDuration, averageDuration, peakIpCount,  platformWeight, browserWeight,areaWeight]) => {
-            _net.responseObj(res, {visitTimes, ipCount, totalDuration, averageDuration, peakIpCount, platformWeight, browserWeight, areaWeight});
+
+        Promise.all([visitTimePromise,ipCountPromise, totalDurationPromise, averageDurationPromise, maxVisitorsPromise,
+            platformWeightPromise, browserWeightPromise,AreaWeightPromise, onlinePromise])
+            .then(([visitTimes, ipCount, totalDuration, averageDuration, peakIpCount,  platformWeight, browserWeight,areaWeight, onlineData]) => {
+            _net.responseObj(res, {visitTimes, ipCount, totalDuration, averageDuration, peakIpCount, platformWeight, browserWeight, areaWeight, onlineData});
         });
 
         // {"visitTimes":1,"ipCount":1000,"peakIpCount":30,"totalDuration":1568,"averageDuration":200}
